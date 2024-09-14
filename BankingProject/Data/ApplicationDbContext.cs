@@ -13,5 +13,6 @@ namespace BankingProject.Data
 		public DbSet<Account> Accounts { get; set; }
 		public DbSet<Deposit> Deposits { get; set; }
 		public DbSet<DebitCard> DebitCards { get; set; }
+		public DbSet<Payment> Payments { get; set; }
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using BankingProject.Models.Base;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Permissions;
 
 namespace BankingProject.Models
 {
@@ -10,6 +11,7 @@ namespace BankingProject.Models
 		public string SWIFT { get; set; }
 		public double Balance { get; set; }
 		public string Currency { get; set; }
+		public bool IsDeleted { get; set; }
 
 		[ForeignKey("AccountId")]
 		public int AccountId { get; set; }

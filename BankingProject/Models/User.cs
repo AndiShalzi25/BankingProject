@@ -11,5 +11,6 @@ namespace BankingProject.Models
 		public string Password { get; set; }
 		public virtual List<UserRole> UserRoles { get; set; }
 		public virtual List<Account> Accounts { get; set; }
+		public virtual List<Payment> Payments { get; set; }
 	}
 }
