@@ -4,6 +4,7 @@ using BankingProject.Models;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using BankingProject.DTO;
+using System.Security.Principal;
 
 namespace BankingProject.Controllers
 {
@@ -32,9 +33,9 @@ namespace BankingProject.Controllers
 			_context = context;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			var users = _context.Users.ToList();
+			var users = await _context.Users.ToListAsync();
 			ViewBag.Users = users;
 			return View();
 		}
@@ -106,6 +107,7 @@ namespace BankingProject.Controllers
 				IBAN = $"{GenerateRandomString(31, letterAndNumberChars)}{depositCurrency}",
 				SWIFT = "NCBTAAL",
 				Balance = 0,
+				IsDeleted = false,
 				AccountId = newAccount.Id,
 				Account = newAccount,
 				CreatedById = 1002,
@@ -115,6 +117,9 @@ namespace BankingProject.Controllers
 			await _context.Deposits.AddAsync(newDeposit);
 			await _context.SaveChangesAsync();
 
+			newAccount.Deposits.Add(newDeposit);
+			await _context.SaveChangesAsync();
+
 			return RedirectToAction(nameof(Index));
 		}
 
@@ -122,12 +127,25 @@ namespace BankingProject.Controllers
 		{
 			var user = await _context.Users.Where(u => u.Id == id).FirstAsync();
 			var accounts = await _context.Accounts.Include(a => a.Deposits).Where(a => a.UserId == id).ToListAsync();
+			var userPayments = await _context.Payments.Where(p => p.UserId == id).ToListAsync();
+
+			var depositList = new List<Deposit>();
+
+			foreach(var account in accounts)
+			{
+				foreach(var deposit in account.Deposits)
+				{
+					depositList.Add(deposit);
+				}
+			}
 
 
 			var model = new UserIndexViewModel()
 			{
 				User = user,
-				Accounts = accounts
+				Accounts = accounts,
+				Payments = userPayments,
+				Deposits = depositList
 			};
 
 			ViewBag.Model = model;
@@ -176,6 +194,7 @@ namespace BankingProject.Controllers
 				IBAN = $"{GenerateRandomString(31, letterAndNumberChars)}{depositCurrency}",
 				SWIFT = "NCBTAAL",
 				Balance = 0,
+				IsDeleted = false,
 				AccountId = newAccount.Id,
 				Account = newAccount,
 				CreatedById = 1002,
@@ -183,6 +202,9 @@ namespace BankingProject.Controllers
 			};
 
 			await _context.Deposits.AddAsync(newDeposit);
+			await _context.SaveChangesAsync();
+
+			newAccount.Deposits.Add(newDeposit);
 			await _context.SaveChangesAsync();
 
 			return RedirectToAction("UserIndex", new { id = userId });
@@ -239,6 +261,75 @@ namespace BankingProject.Controllers
 
 			ViewBag.AccountInfo = model;
 
+			return View();
+		}
+
+		public async Task<IActionResult> CreateDeposit(int accountId, string depositName, string currency)
+		{
+			var account = await _context.Accounts.Where(a => a.Id == accountId).FirstAsync();
+
+			var newDeposit = new Deposit()
+			{
+				Currency = currency,
+				Name = depositName,
+				IBAN = $"{GenerateRandomString(31, letterAndNumberChars)}{currency}",
+				SWIFT = "NCBTAAL",
+				Balance = 0,
+				IsDeleted = false,
+				AccountId = account.Id,
+				Account = account,
+				CreatedById = 1002,
+				CreatedAt = DateTime.Now
+			};
+
+			await _context.Deposits.AddAsync(newDeposit);
+			await _context.SaveChangesAsync();
+
+			account.Deposits.Add(newDeposit);
+			await _context.SaveChangesAsync();
+
+			return RedirectToAction("AccountInfo", new { accountId = accountId });
+		}
+
+		public async Task<IActionResult> EditDeposit(int accountId, int depositId, string depositName)
+		{
+			var deposit = await _context.Deposits.Where(d => d.Id == depositId).FirstAsync();
+			deposit.Name = depositName;
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction("AccountInfo", new { accountId = accountId });
+		}
+
+		public async Task<IActionResult> DeleteDeposit(int accountId, int depositId)
+		{
+			var deposit = await _context.Deposits.Where(d => d.Id == depositId).FirstAsync();
+			deposit.IsDeleted = true;
+
+			await _context.SaveChangesAsync();
+
+			return RedirectToAction("AccountInfo", new { accountId = accountId });
+		}
+
+
+		[HttpGet]
+		public async Task<IActionResult> PaymentIndex(int userId)
+		{
+			var user = await _context.Users.Where(u => u.Id == userId).FirstAsync();
+			
+			var accounts = await _context.Accounts.Where(a => a.UserId == userId).ToListAsync();
+
+			var deposits = new List<Deposit>();
+
+			foreach(var account in accounts)
+			{
+				var dep = await _context.Deposits.Where(d => d.AccountId == account.Id).ToListAsync();
+				
+				deposits.AddRange(dep);
+			}
+
+			
+			ViewBag.User = user;
+			ViewBag.Deposits = deposits;
 			return View();
 		}
 	}
