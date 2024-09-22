@@ -2,24 +2,26 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BankingProject.Models
+namespace BankingProject.Models.Payment
 {
-	public class Payment : BaseEntity
+	public class Mobile : BaseEntity
 	{
+		[Required]
+		public string PhoneNo { get; set; }
+
 		[Required]
 		public string Name { get; set; }
 
-		[Required]
 		public string Description { get; set; }
 
-		[Required]
-		public DateTime PaymentDate { get; set; }
-
-		[Required]
-		public string DepositName { get; set; }
+		[ForeignKey("DepositId")]
+		public int? DepositId { get; set; }
 
 		[Required]
 		public double Amount { get; set; }
+
+		[Required]
+		public string DepositName { get; set; }
 
 		[Required]
 		public string Currency { get; set; }

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using BankingProject.DTO;
 using System.Security.Principal;
+using BankingProject.Models.Payment;
 
 namespace BankingProject.Controllers
 {
@@ -123,11 +124,13 @@ namespace BankingProject.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
-		public async Task<IActionResult> UserIndex(int id)
+		public async Task<IActionResult> UserIndex(int id, string tab)
 		{
+			if (tab == null || tab == "")
+				tab = "ProfileTab";
+
 			var user = await _context.Users.Where(u => u.Id == id).FirstAsync();
 			var accounts = await _context.Accounts.Include(a => a.Deposits).Where(a => a.UserId == id).ToListAsync();
-			var userPayments = await _context.Payments.Where(p => p.UserId == id).ToListAsync();
 
 			var depositList = new List<Deposit>();
 
@@ -139,16 +142,59 @@ namespace BankingProject.Controllers
 				}
 			}
 
+			var mobilePayments = await _context.Mobiles.Where(m => m.UserId == id).ToListAsync();
+
+			var carTicketPayments = await _context.CarTickets.Where(c => c.UserId == id).ToListAsync();
+
+			var payments = new List<Payment>();
+
+			foreach(var payment in mobilePayments)
+			{
+				var p = new Payment()
+				{
+					PaymentId = payment.Id,
+					Title = payment.Name,
+					Description = payment.Description,
+					Category = "Mobile",
+					PaymentDate = payment.CreatedAt,
+					Amount = payment.Amount,
+					Currency = payment.Currency,
+					DepositName = payment.DepositName
+				};
+
+				payments.Add(p);
+			}
+
+			foreach (var payment in carTicketPayments)
+			{
+				var p = new Payment()
+				{
+					PaymentId = payment.Id,
+					Title = payment.Name,
+					Description = payment.Description,
+					Category = "Car Ticket",
+					PaymentDate = payment.CreatedAt,
+					Amount = payment.Amount,
+					Currency = payment.Currency,
+					DepositName = payment.DepositName
+				};
+
+				payments.Add(p);
+			}
+
 
 			var model = new UserIndexViewModel()
 			{
 				User = user,
 				Accounts = accounts,
-				Payments = userPayments,
-				Deposits = depositList
+				Deposits = depositList,
+				Mobiles = mobilePayments,
+				CarTickets = carTicketPayments
 			};
 
 			ViewBag.Model = model;
+			ViewBag.PaymentList = payments;
+			ViewData["ActiveTab"] = tab;
 
 			return View();
 		}
@@ -331,6 +377,75 @@ namespace BankingProject.Controllers
 			ViewBag.User = user;
 			ViewBag.Deposits = deposits;
 			return View();
+		}
+
+
+		[HttpPost]
+		public async Task<IActionResult> CreateMobilePayment(string name, double amount, string phoneNo, int depositId, string description, int userId)
+		{
+			var deposit = await _context.Deposits.Where(d => d.Id == depositId).FirstOrDefaultAsync();
+
+			var user = await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+			var payment = new Mobile()
+			{
+				Name = name,
+				Description = description,
+				PhoneNo = phoneNo,
+				DepositId = depositId,
+				DepositName = deposit.Name,
+				Currency = deposit.Currency,
+				Amount = amount,
+				UserId = userId,
+				User = user,
+				CreatedAt = DateTime.Now,
+				UpdatedAt = DateTime.Now,
+				CreatedById = 1
+			};
+
+			await _context.Mobiles.AddAsync(payment);
+			await _context.SaveChangesAsync();
+
+			deposit.Balance -= amount;
+			await _context.SaveChangesAsync();
+
+			//ViewData["ActiveTab"] = "PaymentTab";
+
+			return RedirectToAction("UserIndex", new { id = userId, tab = "PaymentTab" });
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> CreateCarTicketPayment(string name, double amount, string plate, int depositId, string description, int userId)
+		{
+			var deposit = await _context.Deposits.Where(d => d.Id == depositId).FirstOrDefaultAsync();
+
+			var user = await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+			var payment = new CarTicket()
+			{
+				Name = name,
+				Description = description,
+				Plate = plate,
+				DepositId = depositId,
+				DepositName = deposit.Name,
+				Currency = deposit.Currency,
+				Amount = amount,
+				UserId = userId,
+				User = user,
+				CreatedAt = DateTime.Now,
+				UpdatedAt = DateTime.Now,
+				CreatedById = 1
+			};
+
+			await _context.CarTickets.AddAsync(payment);
+			await _context.SaveChangesAsync();
+
+			deposit.Balance -= amount;
+			await _context.SaveChangesAsync();
+
+			//ViewData["ActiveTab"] = "PaymentTab";
+
+			return RedirectToAction("UserIndex", new { id = userId, tab = "PaymentTab" });
 		}
 	}
 }

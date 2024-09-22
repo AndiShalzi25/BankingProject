@@ -1,4 +1,5 @@
 ﻿using BankingProject.Models;
+using BankingProject.Models.Payment;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankingProject.Data
@@ -13,6 +14,7 @@ namespace BankingProject.Data
 		public DbSet<Account> Accounts { get; set; }
 		public DbSet<Deposit> Deposits { get; set; }
 		public DbSet<DebitCard> DebitCards { get; set; }
-		public DbSet<Payment> Payments { get; set; }
+		public DbSet<Mobile> Mobiles { get; set; }
+		public DbSet<CarTicket> CarTickets { get; set; }
 	}
 }

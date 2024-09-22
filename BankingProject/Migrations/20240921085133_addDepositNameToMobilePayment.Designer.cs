@@ -4,6 +4,7 @@ using BankingProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankingProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240921085133_addDepositNameToMobilePayment")]
+    partial class addDepositNameToMobilePayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,59 +155,6 @@ namespace BankingProject.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Deposits");
-                });
-
-            modelBuilder.Entity("BankingProject.Models.Payment.CarTicket", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DepositId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DepositName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Plate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CarTickets");
                 });
 
             modelBuilder.Entity("BankingProject.Models.Payment.Mobile", b =>
@@ -371,17 +321,6 @@ namespace BankingProject.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("BankingProject.Models.Payment.CarTicket", b =>
-                {
-                    b.HasOne("BankingProject.Models.User", "User")
-                        .WithMany("CarTickets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("BankingProject.Models.Payment.Mobile", b =>
                 {
                     b.HasOne("BankingProject.Models.User", "User")
@@ -427,8 +366,6 @@ namespace BankingProject.Migrations
             modelBuilder.Entity("BankingProject.Models.User", b =>
                 {
                     b.Navigation("Accounts");
-
-                    b.Navigation("CarTickets");
 
                     b.Navigation("Mobiles");
 
