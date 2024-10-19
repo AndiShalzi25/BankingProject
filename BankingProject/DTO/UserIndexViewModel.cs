@@ -10,5 +10,6 @@ namespace BankingProject.DTO
 		public List<Deposit> Deposits { get; set; }
 		public List<Mobile> Mobiles { get; set; }
 		public List<CarTicket> CarTickets { get; set; }
+		public List<Transfer> Transfers { get; set; }
 	}
 }

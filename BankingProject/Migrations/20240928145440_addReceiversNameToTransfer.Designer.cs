@@ -4,6 +4,7 @@ using BankingProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankingProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240928145440_addReceiversNameToTransfer")]
+    partial class addReceiversNameToTransfer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,38 +155,6 @@ namespace BankingProject.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Deposits");
-                });
-
-            modelBuilder.Entity("BankingProject.Models.ExchangeRate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Dollar")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Euro")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("FetchDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Lek")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Pound")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExchangeRates");
                 });
 
             modelBuilder.Entity("BankingProject.Models.Payment.CarTicket", b =>

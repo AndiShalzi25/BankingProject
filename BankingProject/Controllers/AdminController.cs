@@ -183,14 +183,17 @@ namespace BankingProject.Controllers
 			}
 
 
+			var transfers = await _context.Transfers.Where(t => t.UserId == id).ToListAsync();
+
 			var model = new UserIndexViewModel()
 			{
 				User = user,
 				Accounts = accounts,
 				Deposits = depositList,
 				Mobiles = mobilePayments,
-				CarTickets = carTicketPayments
-			};
+				CarTickets = carTicketPayments,
+				Transfers = transfers
+            };
 
 			ViewBag.Model = model;
 			ViewBag.PaymentList = payments;
@@ -446,6 +449,60 @@ namespace BankingProject.Controllers
 			//ViewData["ActiveTab"] = "PaymentTab";
 
 			return RedirectToAction("UserIndex", new { id = userId, tab = "PaymentTab" });
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> CreateTransfer(int userId, string title, double amount, int depositId, string swift, string iban, string description) 
+		{
+			var sender = await _context.Users.Where(u => u.Id == userId).FirstAsync();
+			//Senders
+			var sendersDeposit = await _context.Deposits.Where(d => d.Id == depositId).FirstAsync();
+
+			//Receiver
+			var receiverDeposit = await _context.Deposits.Where(d => d.IBAN == iban).FirstAsync();
+			var account = await _context.Accounts.Where(a => a.Id == receiverDeposit.AccountId).FirstAsync();
+
+			var receiver = await _context.Users.Where(u => u.Id == account.UserId).FirstAsync();
+
+			var newTransfer = new Transfer()
+			{
+				Title = title,
+				Amount = amount,
+				UserId = userId,
+				User = sender,
+				Currency = sendersDeposit.Currency,
+				DepositId = sendersDeposit.Id,
+				Deposit = sendersDeposit,
+				IBAN = receiverDeposit.IBAN,
+				SWIFT = receiverDeposit.SWIFT,
+				ReceiverId = receiver.Id,
+				ReceiverFullName = $"{receiver.Name} {receiver.Surname}",
+				Description = description,
+				CreatedAt = DateTime.Now,
+				UpdatedAt = DateTime.Now,
+				CreatedById = 1
+			};
+
+			await _context.Transfers.AddAsync(newTransfer);
+			await _context.SaveChangesAsync();
+
+			sendersDeposit.Balance -= amount;
+			await _context.SaveChangesAsync();
+
+			var exhangeRate = await _context.ExchangeRates.Where(e => e.Currency == sendersDeposit.Currency).FirstAsync();
+
+			if(receiverDeposit.Currency == "ALL")
+                receiverDeposit.Balance += amount * exhangeRate.Lek;
+            else if (receiverDeposit.Currency == "EUR")
+                receiverDeposit.Balance += amount * exhangeRate.Euro;
+            else if (receiverDeposit.Currency == "USD")
+                receiverDeposit.Balance += amount * exhangeRate.Dollar;
+            else if (receiverDeposit.Currency == "GBP")
+                receiverDeposit.Balance += amount * exhangeRate.Pound;
+
+            await _context.SaveChangesAsync();
+
+			return RedirectToAction("UserIndex", new { id = userId, tab = "" });
 		}
 	}
 }
