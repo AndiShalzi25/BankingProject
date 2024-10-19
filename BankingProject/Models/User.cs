@@ -15,5 +15,6 @@ namespace BankingProject.Models
 		public virtual List<Account> Accounts { get; set; }
 		public virtual List<Mobile> Mobiles { get; set; }
 		public virtual List<CarTicket> CarTickets { get; set; }
+		public virtual List<Transfer> Transfers { get; set; }
 	}
 }

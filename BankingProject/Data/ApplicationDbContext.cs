@@ -16,5 +16,7 @@ namespace BankingProject.Data
 		public DbSet<DebitCard> DebitCards { get; set; }
 		public DbSet<Mobile> Mobiles { get; set; }
 		public DbSet<CarTicket> CarTickets { get; set; }
+		public DbSet<Transfer> Transfers { get; set; }
+		public DbSet<ExchangeRate> ExchangeRates { get; set; }
 	}
 }

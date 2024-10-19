@@ -1,8 +1,200 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Home Page";
+	var exhangeRateALL = ViewBag.ExhangeRateALL as BankingProject.Models.ExchangeRate;
+	var exhangeRateEUR = ViewBag.ExhangeRateEUR as BankingProject.Models.ExchangeRate;
+	var exhangeRateUSD = ViewBag.ExhangeRateUSD as BankingProject.Models.ExchangeRate;
+	var exhangeRateGBP = ViewBag.ExhangeRateGBP as BankingProject.Models.ExchangeRate;
+
+	var transfers = ViewBag.Transfers as IEnumerable<BankingProject.Models.Transfer>;
+
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="col-12 col-lg-8">
+	<div class="app-card app-card-stats-table h-100 shadow-sm">
+		<div class="app-card-header p-3">
+			<div class="row justify-content-between align-items-center">
+				<div class="col-auto">
+					<h4 class="app-card-title">Stats List</h4>
+				</div><!--//col-->
+				<div class="col-auto">
+					<div class="card-header-action">
+						<a href="#">View report</a>
+					</div><!--//card-header-actions-->
+				</div><!--//col-->
+			</div><!--//row-->
+		</div><!--//app-card-header-->
+		<div class="app-card-body p-3 p-lg-4">
+			<div class="table-responsive">
+				<table class="table table-borderless mb-0">
+					<thead>
+						<tr>
+							<th class="meta">Currency</th>
+							<th class="meta stat-cell">Bank Buys</th>
+							<th class="meta stat-cell">Bank Sells</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>€ Euro <span class="text-muted">(EUR)</span></td>
+							<td class="stat-cell">@($"{1/exhangeRateALL?.Euro - 0.5:0.##}")</td>
+							<td class="stat-cell">
+								@($"{exhangeRateEUR?.Lek:0.##}")
+							</td>
+						</tr>
+						<tr>
+							<td>$ Dollar <span class="text-muted">(USD)</span></td>
+							<td class="stat-cell">@($"{1 / exhangeRateALL?.Dollar - 0.5:0.##}")</td>
+							<td class="stat-cell">
+								@($"{exhangeRateUSD?.Lek:0.##}")
+							</td>
+						</tr>
+						<tr>
+							<td>£ British Pound <span class="text-muted">(GBP)</span></td>
+							<td class="stat-cell">@($"{1 / exhangeRateALL?.Pound - 0.5:0.##}")</td>
+							<td class="stat-cell">
+								@($"{exhangeRateGBP?.Lek:0.##}")
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
+
+<div class="row mb-4 mt-4">
+	<div class="col-12 col-lg-12">
+		<div class="app-card app-card-chart h-100 shadow-sm">
+			<div class="app-card-header p-3">
+				<div class="row justify-content-between align-items-center">
+					<div class="col-auto">
+						<h4 class="app-card-title">Transfers</h4>
+					</div>
+				</div>
+			</div>
+			<div class="app-card-body p-4">
+				<div class="mb-3 d-flex mr-2">
+					<select class="form-select form-select-sm ms-auto d-inline-flex w-auto">
+						<option value="1" selected>This week</option>
+						<option value="2">Today</option>
+						<option value="3">This Month</option>
+						<option value="3">This Year</option>
+					</select>
+				</div>
+				<div class="chart-container">
+					<canvas id="chart-line"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts{
+	<script>
+		window.chartColors = {
+			green: '#75c181', // rgba(117,193,129, 1)
+			blue: '#5b99ea', // rgba(91,153,234, 1)
+			gray: '#a9b5c9',
+			text: '#252930',
+			border: '#e7e9ed'
+		};
+
+		var randomDataPoint = function () { return Math.round(Math.random() * 100) };
+		var lineChartConfig = {
+			type: 'line',
+
+			data: {
+				labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+
+				datasets: [{
+					label: 'Dataset',
+					backgroundColor: "rgba(117,193,129,0.2)",
+					borderColor: "rgba(117,193,129, 0.8)",
+					data: [
+						@transfers!.Where(t => t.CreatedAt.Month == 1).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 2).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 3).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 4).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 5).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 6).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 7).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 8).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 9).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 10).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 11).Count(),
+						@transfers!.Where(t => t.CreatedAt.Month == 12).Count(),
+					],
+				}]
+			},
+			options: {
+				responsive: true,
+
+				legend: {
+					display: true,
+					position: 'bottom',
+					align: 'end',
+				},
+
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+					titleMarginBottom: 10,
+					bodySpacing: 10,
+					xPadding: 16,
+					yPadding: 16,
+					borderColor: window.chartColors.border,
+					borderWidth: 1,
+					backgroundColor: '#fff',
+					bodyFontColor: window.chartColors.text,
+					titleFontColor: window.chartColors.text,
+					callbacks: {
+						label: function (tooltipItem, data) {
+							return tooltipItem.value + ' transfers';
+						}
+					},
+
+
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						gridLines: {
+							drawBorder: false,
+							color: window.chartColors.border,
+						},
+						scaleLabel: {
+							display: false,
+
+						}
+					}],
+					yAxes: [{
+						display: true,
+						gridLines: {
+							drawBorder: false,
+							color: window.chartColors.border,
+						},
+						scaleLabel: {
+							display: false,
+						},
+						ticks: {
+							beginAtZero: true,
+							userCallback: function (value, index, values) {
+								return value.toLocaleString();
+							}
+						},
+					}]
+				}
+			}
+		};
+
+		window.addEventListener('load', function () {
+			var lineChart = document.getElementById('chart-line').getContext('2d');
+			window.myLine = new Chart(lineChart, lineChartConfig);
+		});
+	</script>
+}
