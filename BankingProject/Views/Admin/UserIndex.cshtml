@@ -708,7 +708,7 @@
 							@{
 								var withdrawTable = 0;
 							}
-							@foreach (var withdraw in userModel.WithdrawAndDeposits.OrderByDescending(t => t.CreatedAt))
+							@foreach (var withdraw in userModel.WithdrawsAndDeposits.OrderByDescending(t => t.CreatedAt))
 							{
 								withdrawTable++;
 								<tr>
