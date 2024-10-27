@@ -202,7 +202,7 @@ namespace BankingProject.Controllers
 				Mobiles = mobilePayments,
 				CarTickets = carTicketPayments,
 				Transfers = transfers,
-				WithdrawAndDeposits = withdrawList
+				WithdrawsAndDeposits = withdrawList
             };
 
 			ViewBag.Model = model;
