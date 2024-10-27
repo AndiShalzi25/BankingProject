@@ -7,7 +7,7 @@
 	<a class="flex-sm-fill text-sm-center nav-link" id="account-tab" data-bs-toggle="tab" href="#account" role="tab" aria-controls="orders-all" aria-selected="false">Accounts</a>
 	<a class="flex-sm-fill text-sm-center nav-link" id="transfer-tab" data-bs-toggle="tab" href="#transfers" role="tab" aria-controls="orders-paid" aria-selected="false">Transfers</a>
 	<a class="flex-sm-fill text-sm-center nav-link @(ViewData["ActiveTab"]?.ToString() == "PaymentTab" ? "active" : "")" id="payment-tab" data-bs-toggle="tab" href="#payments" role="tab" aria-controls="orders-pending" aria-selected="@(ViewData["ActiveTab"]?.ToString() == "PaymentTab" ? "true" : "false")">Payments</a>
-	<a class="flex-sm-fill text-sm-center nav-link" id="exchange-tab" data-bs-toggle="tab" href="#exchanges" role="tab" aria-controls="orders-cancelled" aria-selected="false">Exchange</a>
+	<a class="flex-sm-fill text-sm-center nav-link @(ViewData["ActiveTab"]?.ToString() == "WithdrawTab" ? "active" : "")" id="withdraw-tab" data-bs-toggle="tab" href="#withdraws" role="tab" aria-controls="orders-cancelled" aria-selected="@(ViewData["ActiveTab"]?.ToString() == "WithdrawTab" ? "true" : "false")">Withdraw/Deposit</a>
 </nav>
 
 <div class="tab-content" id="orders-table-tab-content">
@@ -78,114 +78,114 @@
 		@{
 			foreach (var account in userModel.Accounts)
 			{
-				<div class="col-6 col-md-4 col-xl-3 col-xxl-2">
-					<div class="app-card app-card-doc shadow-sm h-100">
-						<div class="app-card-thumb-holder p-3">
-							<span class="icon-holder">
-								<i class="fa-solid fa-building-columns" style="color:#15A362"></i>
-							</span>
-							<a class="app-card-link-mask" asp-controller="Admin" asp-action="AccountInfo" asp-route-accountId="@account.Id"></a>
-						</div>
-						<div class="app-card-body p-3 has-card-actions">
+										<div class="col-6 col-md-4 col-xl-3 col-xxl-2">
+											<div class="app-card app-card-doc shadow-sm h-100">
+												<div class="app-card-thumb-holder p-3">
+													<span class="icon-holder">
+														<i class="fa-solid fa-building-columns" style="color:#15A362"></i>
+													</span>
+													<a class="app-card-link-mask" asp-controller="Admin" asp-action="AccountInfo" asp-route-accountId="@account.Id"></a>
+												</div>
+												<div class="app-card-body p-3 has-card-actions">
 
-							<h4 class="app-doc-title truncate mb-0"><a href="#file-link">@account.Name</a></h4>
-							<div class="app-doc-meta">
-								<ul class="list-unstyled mb-0">
-									<li><span class="text-muted">Total Balance:</span> @account.TotalBalance ALL</li>
-									<li><span class="text-muted">Deposits:</span> @account.Deposits.Count()</li>
-								</ul>
-							</div><!--//app-doc-meta-->
+													<h4 class="app-doc-title truncate mb-0"><a href="#file-link">@account.Name</a></h4>
+													<div class="app-doc-meta">
+														<ul class="list-unstyled mb-0">
+															<li><span class="text-muted">Total Balance:</span> @account.TotalBalance ALL</li>
+															<li><span class="text-muted">Deposits:</span> @account.Deposits.Count()</li>
+														</ul>
+													</div><!--//app-doc-meta-->
 
-							<div class="app-card-actions">
-								<div class="dropdown">
-									<div class="dropdown-toggle no-toggle-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-										<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-											<path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-										</svg>
-									</div><!--//dropdown-toggle-->
-									<ul class="dropdown-menu">
-										<li>
-											<a class="dropdown-item" asp-controller="Admin" asp-action="AccountInfo" asp-route-accountId="@account.Id">
-												<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-eye me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-													<path fill-rule="evenodd" d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.134 13.134 0 0 0 1.66 2.043C4.12 11.332 5.88 12.5 8 12.5c2.12 0 3.879-1.168 5.168-2.457A13.134 13.134 0 0 0 14.828 8a13.133 13.133 0 0 0-1.66-2.043C11.879 4.668 10.119 3.5 8 3.5c-2.12 0-3.879 1.168-5.168 2.457A13.133 13.133 0 0 0 1.172 8z" />
-													<path fill-rule="evenodd" d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
-												</svg>View
-											</a>
-										</li>
-										<li>
-											<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editModal${@account.Id}">
-												<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-													<path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-												</svg>Edit
-											</a>
-										</li>
-										<li><hr class="dropdown-divider"></li>
-										<li>
-											<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal${@account.Id}">
-												<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-													<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-													<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-												</svg>Delete
-											</a>
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="modal fade" id="editModal${@account.Id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-								<div class="modal-dialog" role="document">
-									<form method="post">
-										<div class="modal-content">
-											<div class="modal-header">
-												<h5 class="modal-title" id="exampleModalLabel">Edit Account</h5>
-											</div>
-											<div class="modal-body">
-												<div class="row">
-													<div class="col-md-12 form-group">
-														<label>Name <stong class="text-danger">*</stong></label>
-														<input type="text" value="@account.Name" class="form-control" name="accountName" autocomplete="off" required />
+													<div class="app-card-actions">
+														<div class="dropdown">
+															<div class="dropdown-toggle no-toggle-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+																<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+																	<path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+																</svg>
+															</div><!--//dropdown-toggle-->
+															<ul class="dropdown-menu">
+																<li>
+																	<a class="dropdown-item" asp-controller="Admin" asp-action="AccountInfo" asp-route-accountId="@account.Id">
+																		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-eye me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+																			<path fill-rule="evenodd" d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.134 13.134 0 0 0 1.66 2.043C4.12 11.332 5.88 12.5 8 12.5c2.12 0 3.879-1.168 5.168-2.457A13.134 13.134 0 0 0 14.828 8a13.133 13.133 0 0 0-1.66-2.043C11.879 4.668 10.119 3.5 8 3.5c-2.12 0-3.879 1.168-5.168 2.457A13.133 13.133 0 0 0 1.172 8z" />
+																			<path fill-rule="evenodd" d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+																		</svg>View
+																	</a>
+																</li>
+																<li>
+																	<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editModal${@account.Id}">
+																		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+																			<path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+																		</svg>Edit
+																	</a>
+																</li>
+																<li><hr class="dropdown-divider"></li>
+																<li>
+																	<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal${@account.Id}">
+																		<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+																			<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+																			<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+																		</svg>Delete
+																	</a>
+																</li>
+															</ul>
+														</div>
+													</div>
+													<div class="modal fade" id="editModal${@account.Id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+														<div class="modal-dialog" role="document">
+															<form method="post">
+																<div class="modal-content">
+																	<div class="modal-header">
+																		<h5 class="modal-title" id="exampleModalLabel">Edit Account</h5>
+																	</div>
+																	<div class="modal-body">
+																		<div class="row">
+																			<div class="col-md-12 form-group">
+																				<label>Name <stong class="text-danger">*</stong></label>
+																				<input type="text" value="@account.Name" class="form-control" name="accountName" autocomplete="off" required />
+																			</div>
+																		</div>
+																	</div>
+																	<div class="modal-footer">
+																		<button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">
+																			<i class="fa-solid fa-x"></i>
+																			Close
+																		</button>
+																		<button type="submit" class="btn btn-primary" style="color:white;" asp-controller="Admin" asp-action="EditAccount" asp-route-accountId="@account.Id">
+																			<i class="fa-solid fa-pencil"></i>
+																			Edit
+																		</button>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+													<div class="modal fade" id="deleteModal${@account.Id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+														<div class="modal-dialog" role="document">
+															<div class="modal-content">
+																<div class="modal-body">
+																	<div class="row">
+																		<div class="col-md-12 mt-3">
+																			<p>Are you sure you want to delete <strong>@account.Name</strong> ?</p>
+																		</div>
+																	</div>
+																</div>
+																<div class="modal-footer">
+																	<button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">
+																		<i class="fa-solid fa-x"></i>
+																		Close
+																	</button>
+																	<a type="button" class="btn btn-danger" style="color:white;" asp-controller="Admin" asp-action="DeleteAccount" asp-route-accountId="@account.Id">
+																		<i class="fa-solid fa-trash"></i>
+																		Delete
+																	</a>
+																</div>
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>
-											<div class="modal-footer">
-												<button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">
-													<i class="fa-solid fa-x"></i>
-													Close
-												</button>
-												<button type="submit" class="btn btn-primary" style="color:white;" asp-controller="Admin" asp-action="EditAccount" asp-route-accountId="@account.Id">
-													<i class="fa-solid fa-pencil"></i>
-													Edit
-												</button>
-											</div>
 										</div>
-									</form>
-								</div>
-							</div>
-							<div class="modal fade" id="deleteModal${@account.Id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-								<div class="modal-dialog" role="document">
-									<div class="modal-content">
-										<div class="modal-body">
-											<div class="row">
-												<div class="col-md-12 mt-3">
-													<p>Are you sure you want to delete <strong>@account.Name</strong> ?</p>
-												</div>
-											</div>
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">
-												<i class="fa-solid fa-x"></i>
-												Close
-											</button>
-											<a type="button" class="btn btn-danger" style="color:white;" asp-controller="Admin" asp-action="DeleteAccount" asp-route-accountId="@account.Id">
-												<i class="fa-solid fa-trash"></i>
-												Delete
-											</a>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
 			}
 		}
 
@@ -619,10 +619,180 @@
 			</div>
 		</div>
 	</div>
-	<div class="tab-pane fade" id="exchanges" role="tabpanel" aria-labelledby="orders-cancelled-tab">
-		<p>This is the exchange tab view</p>
+	<div class="tab-pane fade" id="withdraws" role="tabpanel" aria-labelledby="orders-cancelled-tab">
+		<div class="row mt-3 mb-3">
+			<div class="col-7 col-lg-6">
+				<h1 class="app-page-title mb-0" style="color:#15A261;"><i class="fa-solid fa-hand-holding-dollar"></i> Withdraws & Deposits</h1>
+			</div>
+			<div class="col-5 col-lg-6 text-end">
+				<button class="btn app-btn-primary" data-bs-toggle="modal" data-bs-target="#create-withdraw"><i class="fa-solid fa-circle-plus"></i> Create</button>
+			</div>
+			<div class="modal fade" id="create-withdraw" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg modal-xlg" role="document">
+					<form method="post">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Add new Withdraw/Deposit</h5>
+							</div>
+							<div class="modal-body">
+								<div class="row mt-4">
+									<div class="col-12 col-lg-6">
+										<label>Account <span class="text-danger">*</span></label>
+										<select id="account-dropdown" class="form-control form-select">
+											<option value="null" selected disabled>-Select-</option>
+											@foreach(var account in userModel.Accounts)
+											{
+												<option value="@account.Id">@account.Name</option>
+											}
+										</select>
+									</div>
+									<div class="col-12 col-lg-6">
+										<label>Deposit <span class="text-danger">*</span></label>
+										<select id="deposit-dropdown" class="form-control form-select" name="depositId" disabled>
+											
+										</select>
+									</div>
+								</div>
+								<div class="row mt-4">
+									<div class="col-12 col-lg-4">
+										<label>Type <span class="text-danger">*</span></label>
+										<select class="form-control form-select" name="isWithdraw" required>
+											<option value="true">Withdraw</option>
+											<option value="false">Deposit</option>
+										</select>
+									</div>
+									<div class="col-12 col-lg-4">
+										<label>Amount <span class="text-danger">*</span></label>
+										<input type="number" class="form-control" name="amount" min="100" autocomplete="off" required/>
+									</div>
+								</div>
+								<div class="row mt-4">
+									<div class="col-12 col-lg-12">
+										<label>Description <span class="text-danger">*</span></label>
+										<input type="text" class="form-control" name="description" autocomplete="off" required/>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">
+									<i class="fa-solid fa-x"></i>
+									Close
+								</button>
+								<button type="submit" class="btn btn-primary" asp-controller="Admin" asp-action="CreateWithdrawOrDeposit" asp-route-userId="@userModel.User.Id" style="color:white;">
+									<i class="fa-solid fa-check"></i>
+									Save
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<hr />
+		<div class="app-card app-card-orders-table shadow-sm mb-5">
+			<div class="app-card-body">
+				<div class="table-responsive">
+					<table class="table app-table-hover mb-0 text-left">
+						<thead>
+							<tr>
+								<th class="cell">No#</th>
+								<th class="cell">Type</th>
+								<th class="cell">Deposit</th>
+								<th class="cell">Amount</th>
+								<th class="cell">Date</th>
+								<th class="cell">Description</th>
+								<th class="cell"></th>
+							</tr>
+						</thead>
+						<tbody>
+							@{
+								var withdrawTable = 0;
+							}
+							@foreach (var withdraw in userModel.WithdrawAndDeposits.OrderByDescending(t => t.CreatedAt))
+							{
+								withdrawTable++;
+								<tr>
+									<td class="cell">@withdrawTable</td>
+									<td class="cell">
+										@if(withdraw.IsWithdraw == true)
+										{
+											<span class="badge bg-danger">Withdraw</span>
+										}
+										else
+										{
+											<span class="badge bg-success">Deposit</span>
+										}
+									</td>
+									<td class="cell">@withdraw.Deposit.Name</td>
+									<td class="cell">
+										@if (withdraw.IsWithdraw == true)
+										{
+											<span>
+												<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-down text-danger" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+													<path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z" />
+												</svg>
+												 @withdraw.Amount @withdraw.Deposit.Currency
+											</span>
+										}
+										else
+										{
+											<span>
+												<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-up text-success" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+													<path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z" />
+												</svg>
+												@withdraw.Amount @withdraw.Deposit.Currency
+											</span>
+										}
+										
+									</td>
+									<td class="cell">@withdraw.CreatedAt.ToString("dd/MM/yyyy")</td>
+									<td class="cell"><span class="truncate">@withdraw.Description</span></td>
+									<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
+
+
+@section Scripts{
+	<script src="https://code.jquery.com/jquery-3.7.1.js"
+			integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+			crossorigin="anonymous"></script>
+	<script>
+		$(document).ready(function () {
+			$("#account-dropdown").change(function () {
+				var aId = $(this).val();
+				
+				$.ajax({
+					type: 'GET',
+					url: '/Admin/GetDeposits',
+					dataType: 'json',
+					data: {
+						accountId: aId
+					},
+					success: function (response) {
+						var depositsDropdown = $('#deposit-dropdown');
+						depositsDropdown.empty();
+						depositsDropdown.removeAttr('disabled');
+						$.each(response, function (index, deposit) {
+							var option = `<option value="${deposit.id}">${deposit.name}</option>`;
+
+							depositsDropdown.append(option);
+						});
+					},
+					error: function (xhr, status, error) {
+						console.error('AJAX Error:', error);
+					}
+				});
+			});
+		});
+	</script>
+}
 
 
 

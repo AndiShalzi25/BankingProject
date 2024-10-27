@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using BankingProject.DTO;
 using System.Security.Principal;
 using BankingProject.Models.Payment;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace BankingProject.Controllers
 {
@@ -185,6 +186,14 @@ namespace BankingProject.Controllers
 
 			var transfers = await _context.Transfers.Where(t => t.UserId == id).ToListAsync();
 
+			var withdrawList = new List<WithdrawAndDeposit>();
+
+			foreach(var deposit in depositList)
+			{
+				var withdraws = await _context.WithdrawAndDeposits.Where(w => w.DepositId == deposit.Id).ToListAsync();
+				withdrawList.AddRange(withdraws);
+			}
+
 			var model = new UserIndexViewModel()
 			{
 				User = user,
@@ -192,7 +201,8 @@ namespace BankingProject.Controllers
 				Deposits = depositList,
 				Mobiles = mobilePayments,
 				CarTickets = carTicketPayments,
-				Transfers = transfers
+				Transfers = transfers,
+				WithdrawAndDeposits = withdrawList
             };
 
 			ViewBag.Model = model;
@@ -503,6 +513,54 @@ namespace BankingProject.Controllers
             await _context.SaveChangesAsync();
 
 			return RedirectToAction("UserIndex", new { id = userId, tab = "" });
+		}
+
+
+		//Withdraw and deposit
+
+		public async Task<IActionResult> GetDeposits(string accountId)
+		{
+			var deposits = await _context.Deposits.Where(d => d.AccountId == Convert.ToInt32(accountId)).ToListAsync();
+
+			return Json(deposits);
+		}
+
+
+		[HttpPost]
+		public async Task<IActionResult> CreateWithdrawOrDeposit(int userId, string depositId, bool isWithdraw, double amount, string description)
+		{
+			var deposit = await _context.Deposits.Where(d => d.Id == Convert.ToInt32(depositId)).FirstAsync();
+
+			if (deposit != null)
+			{
+				var withdrawOrDeposit = new WithdrawAndDeposit()
+				{
+					Deposit = deposit,
+					DepositId = deposit.Id,
+					Amount = amount,
+					Description = description,
+					IsWithdraw = isWithdraw,
+					CreatedAt = DateTime.Now,
+					UpdatedAt = DateTime.Now,
+					CreatedById = 1
+				};
+
+				await _context.WithdrawAndDeposits.AddAsync(withdrawOrDeposit);
+				await _context.SaveChangesAsync();
+
+				if (isWithdraw)
+				{
+					deposit.Balance -= amount;
+					_context.SaveChanges();
+				}
+				else
+				{
+					deposit.Balance += amount;
+					_context.SaveChanges();
+				}
+			}
+
+			return RedirectToAction("UserIndex", new { id = userId, tab = "WithdrawTab" });
 		}
 	}
 }
