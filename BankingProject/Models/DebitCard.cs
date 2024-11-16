@@ -15,6 +15,11 @@ namespace BankingProject.Models
 		[MinLength(16)]
 		public string CardNumber {  get; set; }
 		[Required]
+		[MaxLength(4)]
+		[MinLength(4)]
+		public string PIN {  get; set; }
+
+		[Required]
 		[MaxLength(3)]
 		[MinLength(3)]
 		public string CCV {  get; set; }

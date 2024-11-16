@@ -86,7 +86,7 @@ namespace BankingProject.Controllers
 
 			await _context.Accounts.AddAsync(newAccount);
 			await _context.SaveChangesAsync();
-
+			//bej pull mos harro
 			var newDebitCard = new DebitCard()
 			{
 				SerialNumber = GenerateRandomString(10, numberChars),
@@ -95,7 +95,8 @@ namespace BankingProject.Controllers
 				Name = $"{newUser.Name} {newUser.Surname}",
 				ExpireDate = newAccount.CreatedAt.AddYears(5),
 				AccountId = newAccount.Id,
-				Account = newAccount
+				Account = newAccount,
+				PIN = GenerateRandomString(4, numberChars),
 			};
 
 			await _context.DebitCards.AddAsync(newDebitCard);
@@ -239,7 +240,9 @@ namespace BankingProject.Controllers
 				Name = $"{user.Name} {user.Surname}",
 				ExpireDate = newAccount.CreatedAt.AddYears(5),
 				AccountId = newAccount.Id,
-				Account = newAccount
+				Account = newAccount,
+				PIN = GenerateRandomString(4, numberChars)
+			
 			};
 
 			await _context.DebitCards.AddAsync(newDebitCard);
