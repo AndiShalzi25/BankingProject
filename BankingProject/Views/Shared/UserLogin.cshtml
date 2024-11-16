@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Banking Project - Log In</title>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Banking Project Login">
+    <meta name="author" content="Your Name">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- FontAwesome JS-->
+    <script defer src="assets/plugins/fontawesome/js/all.min.js"></script>
+
+    <!-- App CSS -->
+    <link id="theme-style" rel="stylesheet" href="~/css/portal.css">
+</head>
+
+<body class="app app-login p-0">
+    <div class="row g-0 app-auth-wrapper">
+        <div class="col-12 col-md-7 col-lg-6 auth-main-col text-center p-5">
+            <div class="d-flex flex-column align-content-end">
+                <div class="app-auth-body mx-auto">
+                    <div class="app-auth-branding mb-4">
+                        <a class="app-logo" href="/">
+                            <img class="logo-icon me-2" src="~/images/app-logo.svg" alt="logo">
+                        </a>
+                    </div>
+                    <h2 class="auth-heading text-center mb-5">Log In</h2>
+                    <div class="auth-form-container text-start">
+                        <form asp-action="UserLogin" asp-controller="Login" method="post" class="auth-form login-form">
+                            <!-- Debit Card Number Input -->
+                            <div class="debit-card-number mb-3">
+                                <label class="sr-only" for="debitCardNumber">Debit Card Number <span style="color: red;">*</span></label>
+                                <input id="debitCardNumber" name="debitCardNumber" type="text" class="form-control debit-card-number" placeholder="Debit Card Number" required="required">
+                            </div><!--//form-group-->
+                            <!-- PIN Input -->
+                            <div class="pin mb-3">
+                                <label class="sr-only" for="pin">PIN <span style="color: red;">*</span></label>
+                                <input id="pin" name="pin" type="password" class="form-control pin" placeholder="PIN" required="required">
+                                <div class="extra mt-3 row justify-content-between">
+                                    <div class="col-6">
+                                        <!-- Add any extra options here if needed -->
+                                    </div><!--//col-6-->
+                                </div><!--//extra-->
+                            </div><!--//form-group-->
+
+                            <div class="text-center">
+                                <button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Log In</button>
+                            </div>
+                        </form>
+                    </div><!--//auth-form-container-->
+                </div><!--//auth-body-->
+
+                <footer class="app-auth-footer">
+                    <!-- Footer content if needed -->
+                </footer><!--//app-auth-footer-->
+            </div><!--//flex-column-->
+        </div><!--//auth-main-col-->
+
+        <div class="col-12 col-md-5 col-lg-6 h-100 auth-background-col">
+            <div class="auth-background-holder"></div>
+            <div class="auth-background-mask"></div>
+            <div class="auth-background-overlay p-3 p-lg-5">
+                <div class="d-flex flex-column align-content-end h-100">
+                    <div class="h-100"></div>
+                </div>
+            </div><!--//auth-background-overlay-->
+        </div><!--//auth-background-col-->
+    </div><!--//row-->
+</body>
+</html>
